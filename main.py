@@ -134,4 +134,24 @@ async def music_setup(interaction: discord.Interaction):
     # 3. 버튼과 함께 전송
     await interaction.response.send_message(embed=embed, view=MusicControlView())
 
+async def setup_hook(self):
+        # 웹 서버 시작
+        self.loop.create_task(start_server())
+        
+        # Lavalink 연결 시도 로직
+        nodes = [wavelink.Node(uri="http://127.0.0.1:2333", password="youshallnotpass")]
+        
+        # 연결될 때까지 10초마다 재시도 (최대 10번)
+        for i in range(1, 11):
+            try:
+                await wavelink.Pool.connect(nodes=nodes, client=self)
+                print("✅ [성공] Lavalink 서버에 연결되었습니다!")
+                break
+            except Exception as e:
+                print(f"⚠️ [대기] Lavalink 서버가 아직 준비되지 않았습니다. 재시도 중... ({i}/10)")
+                await asyncio.sleep(10) # 10초 대기
+
+        self.add_view(MusicControlView())
+        await self.tree.sync()
+
 bot.run(os.getenv('BOT_TOKEN'))
