@@ -1,0 +1,22 @@
+server:
+  port: 2333           # 봇이 엔진에 접속할 통로 번호
+  address: 0.0.0.0     # 어디서든 접속 가능하게 설정
+
+lavalink:
+  server:
+    password: "youshallnotpass" # 봇 코드와 일치해야 하는 비밀번호
+    sources:
+      youtube: true    # 유튜브 재생 허용
+      bandcamp: true
+      soundcloud: true # 사운드클라우드 재생 허용
+      twitch: true
+      vimeo: true
+      http: true
+      local: false
+    bufferDurationMs: 400
+    frameBufferDurationMs: 5000
+
+logging:
+  level:
+    root: INFO
+    lavalink: INFO
