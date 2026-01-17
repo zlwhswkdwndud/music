@@ -18,4 +18,6 @@ COPY . .
 
 # Lavalink와 봇을 동시에 실행
 
-CMD java -jar Lavalink.jar & python main.py
+RUN chmod +x run.sh
+CMD ["./run.sh"]
+
