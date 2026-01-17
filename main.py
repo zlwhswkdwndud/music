@@ -40,11 +40,16 @@ class MyBot(commands.Bot):
         # 웹 서버 시작
         self.loop.create_task(start_server())
         
-        # Lavalink 연결
-        node = wavelink.Node(uri="http://localhost:2333", password="youshallnotpass")
-        await wavelink.Pool.connect(nodes=[node], client=self)
+        # 공개용 Lavalink 서버 정보 (주소와 비밀번호 확인!)
+        # 아래 주소 중 하나를 골라서 넣어보세요.
+        node = wavelink.Node(
+            uri="http://lava.link:80", # 무료 공개 서버 주소
+            password="youshallnotpass"  # 공개 서버 공용 비밀번호
+        )
         
-        # 버튼 영구 유지 설정
+        await wavelink.Pool.connect(nodes=[node], client=self)
+        print("✅ 공개 Lavalink 서버 연결 성공!")
+
         self.add_view(MusicControlView())
         await self.tree.sync()
 
@@ -155,3 +160,4 @@ async def setup_hook(self):
         await self.tree.sync()
 
 bot.run(os.getenv('BOT_TOKEN'))
+
