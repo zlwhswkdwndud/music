@@ -37,18 +37,32 @@ class MyBot(commands.Bot):
         super().__init__(command_prefix="!", intents=intents)
 
     async def setup_hook(self):
-        # 웹 서버 시작
+        # 웹 서버 시작 (Render 잠자기 방지)
         self.loop.create_task(start_server())
         
-        # 공개용 Lavalink 서버 정보 (주소와 비밀번호 확인!)
-        # 아래 주소 중 하나를 골라서 넣어보세요.
-        node = wavelink.Node(
-            uri="https://lavalink.lexis.host:443", # https와 443 포트 사용
-            password="lexishost"
-        )
+        # 외부 무료 노드가 응답할 때까지 재시도
+        # 여러 주소를 리스트로 넣어 하나라도 걸리게 설정합니다.
+        nodes = [
+            wavelink.Node(uri="https://lavalink.lexis.host:443", password="lexishost"),
+            wavelink.Node(uri="http://lavalink.paniek.de:80", password="youshallnotpass")
+        ]
         
-        await wavelink.Pool.connect(nodes=[node], client=self)
-        print("✅ 공개 Lavalink 서버 연결 성공!")
+        print("🌐 Lavalink 연결 시도 중... (네트워크 안정화 대기)")
+        
+        connected = False
+        for i in range(1, 11): # 최대 10번 재시도
+            try:
+                # 30초 정도 충분히 쉬었다가 시도 (Render 네트워크 부팅 대기)
+                await asyncio.sleep(20) 
+                await wavelink.Pool.connect(nodes=nodes, client=self)
+                print("✅ [성공] 공개 Lavalink 서버에 연결되었습니다!")
+                connected = True
+                break
+            except Exception as e:
+                print(f"⚠️ [재시도 {i}/10] 연결 실패: {e}")
+                
+        if not connected:
+            print("❌ 모든 노드 연결에 실패했습니다. 나중에 다시 배포해 보세요.")
 
         self.add_view(MusicControlView())
         await self.tree.sync()
@@ -160,5 +174,6 @@ async def setup_hook(self):
         await self.tree.sync()
 
 bot.run(os.getenv('BOT_TOKEN'))
+
 
 
