@@ -17,4 +17,5 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
 
 # Lavalink와 봇을 동시에 실행
+
 CMD java -jar Lavalink.jar & python main.py
